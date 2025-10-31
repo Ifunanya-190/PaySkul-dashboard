@@ -89,6 +89,16 @@ function Dashboard() {
     }
   ];
 
+  // Helper function for status colors
+  const getStatusClass = (status) => {
+    switch (status) {
+      case 'PENDING': return 'bg-yellow-100 text-yellow-800';
+      case 'OFFER MADE': return 'bg-green-100 text-green-800';
+      case 'NEEDS REVIEW': return 'bg-orange-100 text-orange-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   const handleLoadApplicants = () => {
     setIsLoading(true);
     setTimeout(() => {
@@ -178,7 +188,7 @@ function Dashboard() {
       </div>
 
       {/* Stats Grid with Soft Cards */}
-      <div className="grid grid-cols-4 gap-6 mt-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
         {stats.map((stat, index) => (
           <div key={index} className="bg-white rounded-xl p-6 text-center shadow-sm">
             <div className="text-2xl font-bold text-blue-600">{stat.value}</div>
@@ -187,9 +197,9 @@ function Dashboard() {
         ))}
       </div>
 
-      {/* Creditworthy Applicants Section - Borderless Design */}
-      <div className="bg-white rounded-xl shadow-sm mt-4">
-        <div className="p-6 flex justify-between items-center">
+      {/* Creditworthy Applicants Section - Fixed Layout */}
+      <div className="bg-white rounded-xl shadow-sm mt-8 overflow-hidden">
+        <div className="p-6 flex justify-between items-center border-b border-gray-200">
           <div className="text-lg font-semibold text-gray-800">Creditworthy Applicants</div>
           {!showApplicants && (
             <button
@@ -209,126 +219,136 @@ function Dashboard() {
           )}
         </div>
         
-        {/* Table Header - Soft Background */}
-        <div className="px-6 py-3 bg-gray-50">
-          <div className="grid grid-cols-12 gap-4 text-sm font-medium text-gray-700">
-            <div className="col-span-1">ID</div>
-            <div className="col-span-2">Applicant</div>
-            <div className="col-span-3">Employment Info</div>
-            <div className="col-span-2">Loan Details</div>
-            <div className="col-span-2">Status</div>
-            <div className="col-span-1">Date</div>
-            <div className="col-span-1">Actions</div>
-          </div>
-        </div>
-
-        {/* Applicant Rows */}
-        <div className="divide-y divide-gray-100">
-          {/* First row - Always visible */}
-          <div className="px-6 py-4 hover:bg-gray-50 transition-colors duration-200">
-            <div className="grid grid-cols-12 gap-4 items-center">
-              <div className="col-span-1">
-                <span className="font-medium text-gray-800">#52</span>
-              </div>
-              <div className="col-span-2">
-                <span className="text-gray-700">N/A</span>
-              </div>
-              <div className="col-span-3">
-                <div className="font-medium text-gray-800">PayskulApp</div>
-                <div className="text-gray-600 text-sm">Dept: Customer Service</div>
-                <div className="text-gray-600 text-sm">State: Lagos</div>
-                <div className="text-gray-600 text-sm">Designation: Customer Service Representative</div>
-              </div>
-              <div className="col-span-2">
-                <div className="text-gray-800">Amount: ₦35,000</div>
-                <div className="text-gray-600 text-sm">Tenor: 6 months</div>
-                <div className="flex items-center text-gray-600 text-sm">
-                  Can Afford: <span className="ml-1 text-red-500">❌ No</span>
-                </div>
-              </div>
-              <div className="col-span-2">
-                <div className="space-y-2">
-                  <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">
-                    PENDING
-                  </span>
-                  <button 
-                    onClick={() => handleCreditCheck('#52')}
-                    className="block mt-2 text-green-600 hover:text-green-800 text-sm font-medium px-2 py-1 bg-green-50 rounded-lg hover:bg-green-100 transition-colors"
-                  >
-                    CREDIT CHECK
-                  </button>
-                </div>
-              </div>
-              <div className="col-span-1">
-                <span className="text-gray-700">8/27/2025</span>
-              </div>
-              <div className="col-span-1">
-                <button 
-                  onClick={() => handleViewDetails(applicants[0])}
-                  className="w-full text-blue-600 hover:text-blue-800 cursor-pointer active:scale-95 text-sm font-medium px-3 py-1 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
-                >
-                  View Details
-                </button>
+        {/* Table Container with Horizontal Scroll */}
+        <div className="overflow-x-auto">
+          {/* Table Header - Fixed */}
+          <div className="min-w-[1200px]">
+            {/* Table Header */}
+            <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+              <div className="grid grid-cols-12 gap-4 text-sm font-medium text-gray-700">
+                <div className="col-span-1">ID</div>
+                <div className="col-span-2">Applicant</div>
+                <div className="col-span-3">Employment Info</div>
+                <div className="col-span-2">Loan Details</div>
+                <div className="col-span-2">Status</div>
+                <div className="col-span-1">Date</div>
+                <div className="col-span-1">Actions</div>
               </div>
             </div>
-          </div>
 
-          {/* Show other applicants only after loading */}
-          {showApplicants && applicants.slice(1).map((applicant) => (
-            <div key={applicant.id} className="px-6 py-4 hover:bg-gray-50 transition-colors duration-200">
-              <div className="grid grid-cols-12 gap-4 items-center">
-                <div className="col-span-1">
-                  <span className="font-medium text-gray-800">{applicant.id}</span>
-                </div>
-                <div className="col-span-2">
-                  <span className="text-gray-700">{applicant.applicant}</span>
-                </div>
-                <div className="col-span-3">
-                  <div className="font-medium text-gray-800">{applicant.employmentInfo.company}</div>
-                  <div className="text-gray-600 text-sm">Dept: {applicant.employmentInfo.department}</div>
-                  <div className="text-gray-600 text-sm">State: {applicant.employmentInfo.state}</div>
-                  <div className="text-gray-600 text-sm">Designation: {applicant.employmentInfo.designation}</div>
-                </div>
-                <div className="col-span-2">
-                  <div className="text-gray-800">Amount: {applicant.loanDetails.amount}</div>
-                  <div className="text-gray-600 text-sm">Tenor: {applicant.loanDetails.tenor}</div>
-                  <div className="flex items-center text-gray-600 text-sm">
-                    Can Afford: <span className="ml-1 text-red-500">❌ No</span>
+            {/* Applicant Rows - Fixed */}
+            <div className="divide-y divide-gray-100">
+              {/* First Applicant - Always Visible */}
+              <div className="px-6 py-4 hover:bg-gray-50 transition-colors duration-200 border-b border-gray-100">
+                <div className="grid grid-cols-12 gap-4 items-center">
+                  <div className="col-span-1">
+                    <span className="font-medium text-gray-800 text-sm">#52</span>
                   </div>
-                </div>
-                <div className="col-span-2">
-                  <div className="space-y-2">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      applicant.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
-                      applicant.status === 'OFFER MADE' ? 'bg-green-100 text-green-800' :
-                      'bg-orange-100 text-orange-800'
-                    }`}>
-                      {applicant.status}
+                  
+                  <div className="col-span-2">
+                    <span className="text-gray-700 text-sm">N/A</span>
+                  </div>
+                  
+                  <div className="col-span-3 space-y-1">
+                    <div className="font-medium text-gray-800 text-sm">PayskulApp</div>
+                    <div className="text-gray-600 text-xs">Dept: Customer Service</div>
+                    <div className="text-gray-600 text-xs">State: Lagos</div>
+                    <div className="text-gray-600 text-xs">Designation: Customer Service Representative</div>
+                  </div>
+                  
+                  <div className="col-span-2 space-y-1">
+                    <div className="text-gray-800 text-sm">Amount: ₦35,000</div>
+                    <div className="text-gray-600 text-xs">Tenor: 6 months</div>
+                    <div className="flex items-center text-gray-600 text-xs">
+                      Can Afford: <span className="ml-1 text-red-500">❌ No</span>
+                    </div>
+                  </div>
+                  
+                  <div className="col-span-2 space-y-2">
+                    <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">
+                      PENDING
                     </span>
-                    {applicant.status === 'PENDING' && (
-                      <button
-                        onClick={() => handleCreditCheck(applicant.id)}
-                        className="block w-full text-green-600 hover:text-green-800 text-sm font-medium px-3 py-1 bg-green-50 rounded-lg hover:bg-green-100 transition-colors"
-                      >
-                        CREDIT CHECK
-                      </button>
-                    )}
+                    <button 
+                      onClick={() => handleCreditCheck('#52')}
+                      className="block w-full text-green-600 hover:text-green-800 text-xs font-medium px-2 py-1 bg-green-50 rounded hover:bg-green-100 transition-colors"
+                    >
+                      CREDIT CHECK
+                    </button>
+                  </div>
+                  
+                  <div className="col-span-1">
+                    <span className="text-gray-700 text-sm">8/27/2025</span>
+                  </div>
+                  
+                  <div className="col-span-1">
+                    <button 
+                      onClick={() => handleViewDetails(applicants[0])}
+                      className="w-full text-blue-600 hover:text-blue-800 cursor-pointer active:scale-95 text-xs font-medium px-2 py-1 bg-blue-50 rounded hover:bg-blue-100 transition-colors"
+                    >
+                      View Details
+                    </button>
                   </div>
                 </div>
-                <div className="col-span-1">
-                  <span className="text-gray-700">{applicant.date}</span>
-                </div>
-                <div className="col-span-1">
-                  <button
-                    onClick={() => handleViewDetails(applicant)}
-                    className="w-full text-blue-600 hover:text-blue-800 cursor-pointer active:scale-95 text-sm font-medium px-3 py-1 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
-                  >
-                    View Details
-                  </button>
-                </div>
               </div>
+
+              {/* Other Applicants - Show after loading */}
+              {showApplicants && applicants.slice(1).map((applicant) => (
+                <div key={applicant.id} className="px-6 py-4 hover:bg-gray-50 transition-colors duration-200 border-b border-gray-100">
+                  <div className="grid grid-cols-12 gap-4 items-center">
+                    <div className="col-span-1">
+                      <span className="font-medium text-gray-800 text-sm">{applicant.id}</span>
+                    </div>
+                    
+                    <div className="col-span-2">
+                      <span className="text-gray-700 text-sm">{applicant.applicant}</span>
+                    </div>
+                    
+                    <div className="col-span-3 space-y-1">
+                      <div className="font-medium text-gray-800 text-sm">{applicant.employmentInfo.company}</div>
+                      <div className="text-gray-600 text-xs">Dept: {applicant.employmentInfo.department}</div>
+                      <div className="text-gray-600 text-xs">State: {applicant.employmentInfo.state}</div>
+                      <div className="text-gray-600 text-xs">Designation: {applicant.employmentInfo.designation}</div>
+                    </div>
+                    
+                    <div className="col-span-2 space-y-1">
+                      <div className="text-gray-800 text-sm">Amount: {applicant.loanDetails.amount}</div>
+                      <div className="text-gray-600 text-xs">Tenor: {applicant.loanDetails.tenor}</div>
+                      <div className="flex items-center text-gray-600 text-xs">
+                        Can Afford: <span className="ml-1 text-red-500">❌ No</span>
+                      </div>
+                    </div>
+                    
+                    <div className="col-span-2 space-y-2">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(applicant.status)}`}>
+                        {applicant.status}
+                      </span>
+                      {applicant.status === 'PENDING' && (
+                        <button
+                          onClick={() => handleCreditCheck(applicant.id)}
+                          className="block w-full text-green-600 hover:text-green-800 text-xs font-medium px-2 py-1 bg-green-50 rounded hover:bg-green-100 transition-colors"
+                        >
+                          CREDIT CHECK
+                        </button>
+                      )}
+                    </div>
+                    
+                    <div className="col-span-1">
+                      <span className="text-gray-700 text-sm">{applicant.date}</span>
+                    </div>
+                    
+                    <div className="col-span-1">
+                      <button
+                        onClick={() => handleViewDetails(applicant)}
+                        className="w-full text-blue-600 hover:text-blue-800 cursor-pointer active:scale-95 text-xs font-medium px-2 py-1 bg-blue-50 rounded hover:bg-blue-100 transition-colors"
+                      >
+                        View Details
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       </div>
 
@@ -356,7 +376,7 @@ function Dashboard() {
             </div>
 
             <div className="p-6">
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="bg-gray-50 rounded-lg p-4">
                   <h3 className="font-semibold text-gray-800 mb-3">Personal Information</h3>
                   <div className="space-y-2 text-sm">
